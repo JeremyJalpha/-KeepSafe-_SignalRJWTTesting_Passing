@@ -1,0 +1,42 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@using SidekickApp_MAUIHybridMobile.SignalR
+@using Microsoft.Maui.Storage;
+@using System.Threading.Tasks;
+@inject SignalRService SignalRService
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<button @onclick="SendMockCoords" style="background-color: @btnSendMockCoords;">Send mock Coordinates</button>
+
+@code {
+    private string btnSendMockCoords = "default";
+
+    private async Task SendMockCoords()
+    {
+        try
+        {
+            // JWT is valid, connect to the Hub
+            await SignalRService.StartConnWithJWTAsync("https://localhost:443/GPSLocationHub",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InVzZXIxIiwic3ViIjoidXNlcjEiLCJqdGkiOiJiY2M3ZWI4MCIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjQ0My9HUFNMb2NhdGlvbkh1YiIsIm5iZiI6MTc0MDMwMjg2OCwiZXhwIjoxNzQ3OTkyNDY4LCJpYXQiOjE3NDAzMDI4NzAsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.-DVJAMYP8mwVyCUMoPLXMmdQYZL2190c11F32adm02c");
+
+            await SignalRService.SendCoordsToGPSLocHub(1);
+
+            // Set the button color to green
+            btnSendMockCoords = "green";
+
+            // Force UI update
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception e)
+        {
+            // Handle any exceptions
+            btnSendMockCoords = "red";
+            Console.WriteLine($"Exception: {e.Message}\nStack Trace: {e.StackTrace}");
+            // Force UI update
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}
